@@ -287,35 +287,23 @@ function getASIN() {
 }
 
 function getPrice() {
-//    let priceSpan = $('#corePrice_desktop > div > table > tbody > tr > td.a-span12:not(.a-color-secondary) > span.a-price.a-text-price.a-size-medium > span.a-offscreen');
-    let priceSpan = $('#apex_desktop_newAccordionRow > #corePrice_desktop > div > table > tbody > tr > td.a-span12:not(.a-color-secondary) > span.a-price.a-text-price.a-size-medium > span.a-offscreen');
-    let priceSpanSimple = $('#corePriceDisplay_desktop_feature_div:eq(0) > div > span > span.a-offscreen');
-    let priceCart = $('#corePrice_feature_div > div > span > span.a-offscreen');
-	let priceBlock = $('span#priceblock_ourprice');
-	let priceBuyBox = $('span#newBuyBoxPrice');
-	let priceInsideBuyBox = $('span#price_inside_buybox');
+	// jQueryの全セレクタのまとめ「完全マスター辞典！」
+	// https://stand-4u.com/web/javascript/jquery-selector.html
+	
+	apex_offerDisplay_desktop
+	
+	let priceOffer = $('#apex_offerDisplay_desktop > #corePrice_feature_div > div.a-section > span.a-price   span.a-price-whole');
+	let priceBuyBox = $('#apex_desktop_qualifiedBuybox > #corePriceDisplay_desktop_feature_div:eq(0) > div.a-spacing-none > span.a-price   span.a-price-whole');
 	let priceAllOffers = $('div#olp_feature_div > div.a-section.a-spacing-small.a-spacing-top-small > span > a > span.a-size-base.a-color-price');
 
     let priceAlias = null;
     
-	if ( priceSpan[0] ) {
+	if ( priceOffer[0] ) {
 		console.log('found price element:10');
-		priceAlias = priceSpan;
-	} else if ( priceSpanSimple[0] ) {
+		priceAlias = priceOffer;
+	} else if ( priceBuyBox[0] ) {
 		console.log('found price element:20');
-		priceAlias = priceSpanSimple;
-	} else if ( priceCart[0] ) {
-		console.log('found price element:30');
-		priceAlias = priceCart;
-	} else if ( priceBlock[0] ) {
-		console.log('found price element:40');
-		priceAlias = priceBlock;
-	} else if (priceBuyBox[0]) {
-		console.log('found price element:50');
 		priceAlias = priceBuyBox;
-	} else if (priceInsideBuyBox[0]) {
-		console.log('found price element:60');
-		priceAlias = priceInsideBuyBox;
 	} else if (priceAllOffers[0]) {
 		console.log('found price element:70');
 		priceAlias = priceAllOffers;
