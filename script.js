@@ -39,7 +39,7 @@ msg.point = '';
 // タイマー設定
 const jsInitCheckTimer = setInterval(function () {
 
-	console.log('called timer handler');
+	console.log('called timer handler: '+ gCounter);
 	gCounter++;
 
 	// ASIN取得
@@ -132,7 +132,6 @@ const jsInitCheckTimer = setInterval(function () {
 	
 	// ひとまずASIN・価格・ポイントを表示して、backgroundに通知して計算を始めてもらう
 	if (isGotASIN && isGotPrice && isGotPoint && isGotItemName && isGotCategory && isGotJan && isGotRank && isGotOffer && isGotFees && !isWrittenAsinAndPrice) {
-	//if (isGotASIN && isGotPrice && isGotPoint && isGotItemName && isGotCategory && !isWrittenAsinAndPrice) {
 		writeAsinAndPrice();
 
 		// ASINと価格を取得したので、backgroundに通知して計算を始めてもらう
@@ -146,7 +145,15 @@ const jsInitCheckTimer = setInterval(function () {
 		//});
 		isWrittenAsinAndPrice = true;
 	}
+	else {
+		console.log("isGotASIN:"+isGotASIN+" isGotPrice:"+isGotPrice+" isGotPoint:"+isGotPoint+" isGotItemName:"+isGotItemName+" isGotCategory:"+isGotCategory+" isGotJan:"+isGotJan+" isGotRank:"+isGotRank+" isGotOffer:"+isGotOffer+" isGotFees:"+isGotOffer);
+	}
 
+	// 最後の処理が終わるか１分超えたらタイマーを止める
+	if (isWrittenAsinAndPrice || gCounter>60) {
+		  clearInterval(jsInitCheckTimer);
+	}
+	
 	// backgroundに計算を依頼し、結果が戻ってきたら表示する処理を登録
 	//if (isStartCalc && !isGotSellingFees) {
 	//	msg.status = 'waitFinishCalc';
@@ -319,16 +326,16 @@ function getPrice() {
 	// jQueryの全セレクタのまとめ「完全マスター辞典！」
 	// https://stand-4u.com/web/javascript/jquery-selector.html
 	
-	let stringBuyBox = '#apex_desktop > #corePriceDisplay_desktop_feature_div > div.a-spacing-none > span.a-price	span.a-price-whole';
+	let priceBuyBox = $('#corePriceDisplay_desktop_feature_div > div.a-spacing-none > span.a-price span.a-price-whole').first();
 	let stringAccord = '#apex_desktop_newAccordionRow[style!="display:none;"] > #corePriceDisplay_desktop_feature_div > div.a-spacing-none > span.a-price	span.a-price-whole';
 	let stringOffer1 = '#apex_offerDisplay_desktop > #corePrice_feature_div	  span.a-price	 span.a-price-whole';
 	let stringAllOffers = 'div#olp_feature_div > div.a-section.a-spacing-small.a-spacing-top-small > span > a > span.a-size-base.a-color-price';
 
 	let priceAlias = null;
 
-	if ( priceBuyBox = $(stringBuyBox).text() ) {
-		console.log('found price element:BuyBox');
-		priceAlias = priceBuyBox;
+	if ( priceBuyBox ) {
+		console.log('found price element:BuyBox ' + priceBuyBox[0]);
+		priceAlias = priceBuyBox.text();
 	} else if ( priceAccord = $(stringAccord).text() ) {
 		console.log('found price element:Accord');
 		priceAlias = priceAccord;
@@ -441,6 +448,7 @@ function getItemName() {
 function getCategory() {
 	let spanCategory = $('#nav-subnav > a.nav-a.nav-b > span');
 	let anchorCategory = $('div#detailBulletsWrapper_feature_div > ul > li > span:contains(売れ筋ランキング) > a');
+	let tableCat = $('table#productDetails_detailBullets_sections1 > tbody > tr > th:contains(売れ筋ランキング) + td > span > span:first');
 	
 	if ( spanCategory[0] ) {
 		console.log('found category element:1');
@@ -462,6 +470,15 @@ function getCategory() {
 		let textCategory2 = textCategory.replace('の売れ筋ランキングを見る', '');
 		
 		return textCategory2;
+	} else if ( tableCat[0] ) {
+		console.log('found category element:3');
+		let stringCategory = tableCat.text();
+		if (stringCategory) {
+			console.log('got tableCat:'+stringCategory);
+			stringCategory = stringCategory.replace(/[^\d]/g, '');
+			console.log(stringCategory);
+			return stringCategory;
+		}
 	}
 
 	return null;
